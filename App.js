@@ -1,20 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AppRegistry } from 'react-native';
+import HomeScreen from './screens/HomeScreen';
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import MyAccountScreen from './screens/MyAccountScreen';
+import EditMyInfoScreen from './screens/EditMyInfo';
+import AddNewReciept from './screens/AddRecipeScreen';
+import TestStorage from './screens/TestStorage';
 
-export default function App() {
+const Stack = createNativeStackNavigator();
+
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="MyAccount" component={MyAccountScreen} />
+        <Stack.Screen name="EditAccount" component={EditMyInfoScreen} />
+        <Stack.Screen name="AddReciept" component={AddNewReciept} />
+        <Stack.Screen name="TestStorage" component={TestStorage} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// appName değişkenini app.json dosyanızdan alın
+import { name as appName } from './app.json';
+import EditMyInfo from './screens/EditMyInfo';
+AppRegistry.registerComponent(appName, () => App);
+
+export default App;
