@@ -11,8 +11,8 @@ function MyAccountScreen({ navigation }) {
         username: '',
         fullName: '',
         location: '',
+        profileImageUrl: '',
         admin: false,
-        profilePicUrl: ''
     });
 
     useEffect(() => {
@@ -37,10 +37,12 @@ function MyAccountScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Image
-                source={{ uri: profile.profilePicUrl || 'https://via.placeholder.com/70/000000/FFFFFF/?text=No+Image' }}
-                style={styles.profileImage}
-            />
+            <View style={styles.profileContainer}>
+                <Image
+                    source={{ uri: profile.profileImageUrl || 'https://via.placeholder.com/70x70.png?text=No+Image' }}
+                    style={styles.profileImage}
+                />
+            </View>
             <Text>Email: {user?.email}</Text>
             <Text>Welcome "{profile.username}"</Text>
             <Text>Name: {profile.fullName}</Text>
@@ -50,8 +52,8 @@ function MyAccountScreen({ navigation }) {
             <Button title="Logout" onPress={handleLogout} />
             <Button title="Add New Recipe" onPress={() => navigation.navigate('AddReciept')} />
             <Button title="Home" onPress={() => navigation.navigate('Home')} />
-            <Button title="My Recipes" onPress={() => navigation.navigate('MyRecipesScreen')} />
             <Button title="Test Image Upload" onPress={() => navigation.navigate('TestStorage')} />
+            <Button title="My Recipes" onPress={() => navigation.navigate('MyRecipesScreen')} />
         </View>
     );
 }
@@ -63,12 +65,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 20
     },
+    profileContainer: {
+        marginBottom: 20
+    },
     profileImage: {
         width: 70,
         height: 70,
-        borderRadius: 35, // Makes the image circular
-        backgroundColor: 'black', // Default background color if no image
-        marginBottom: 20
+        borderRadius: 35,
+        backgroundColor: 'black'
     }
 });
 
