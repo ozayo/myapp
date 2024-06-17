@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
@@ -10,7 +10,9 @@ function MyAccountScreen({ navigation }) {
     const [profile, setProfile] = useState({
         username: '',
         fullName: '',
-        location: ''
+        location: '',
+        admin: false,
+        profilePicUrl: ''
     });
 
     useEffect(() => {
@@ -35,16 +37,21 @@ function MyAccountScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <Image
+                source={{ uri: profile.profilePicUrl || 'https://via.placeholder.com/70/000000/FFFFFF/?text=No+Image' }}
+                style={styles.profileImage}
+            />
             <Text>Email: {user?.email}</Text>
             <Text>Welcome "{profile.username}"</Text>
             <Text>Name: {profile.fullName}</Text>
             <Text>Location: {profile.location}</Text>
+            <Text>Role: {profile.admin ? 'Admin' : 'User'}</Text>
             <Button title="Edit Profile" onPress={() => navigation.navigate('EditAccount')} />
-        <Button title="Logout" onPress={handleLogout} />
-        <Button title="Add New Recipe" onPress={() => navigation.navigate('AddReciept')} />
-        <Button title="Home" onPress={() => navigation.navigate('Home')} />
-        
-        <Button title="Test Image Upload" onPress={() => navigation.navigate('TestStorage')} />
+            <Button title="Logout" onPress={handleLogout} />
+            <Button title="Add New Recipe" onPress={() => navigation.navigate('AddReciept')} />
+            <Button title="Home" onPress={() => navigation.navigate('Home')} />
+            <Button title="My Recipes" onPress={() => navigation.navigate('MyRecipesScreen')} />
+            <Button title="Test Image Upload" onPress={() => navigation.navigate('TestStorage')} />
         </View>
     );
 }
@@ -55,6 +62,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 20
+    },
+    profileImage: {
+        width: 70,
+        height: 70,
+        borderRadius: 35, // Makes the image circular
+        backgroundColor: 'black', // Default background color if no image
+        marginBottom: 20
     }
 });
 
