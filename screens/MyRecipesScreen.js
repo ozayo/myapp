@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 
 function MyRecipesScreen({ navigation }) {
@@ -15,41 +15,47 @@ function MyRecipesScreen({ navigation }) {
             const fetchRecipes = async () => {
                 const q = query(collection(db, 'recipes'), where('createdBy', '==', user.uid));
                 const querySnapshot = await getDocs(q);
-                const recipesList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setRecipes(recipesList);
+                const userRecipes = [];
+                querySnapshot.forEach((doc) => {
+                    userRecipes.push({ id: doc.id, ...doc.data() });
+                });
+                setRecipes(userRecipes);
             };
+
             fetchRecipes();
         }
     }, [user]);
 
-    const handleDelete = async (id) => {
-        await deleteDoc(doc(db, 'recipes', id));
-        setRecipes(recipes.filter(recipe => recipe.id !== id));
+    const handleDeleteRecipe = async (recipeId) => {
+        try {
+            await deleteDoc(doc(db, 'recipes', recipeId));
+            setRecipes((prevRecipes) => prevRecipes.filter(recipe => recipe.id !== recipeId));
+            Alert.alert('Success', 'Recipe deleted successfully');
+        } catch (error) {
+            console.error('Error deleting recipe:', error);
+            Alert.alert('Error', 'Failed to delete recipe');
+        }
     };
 
     return (
-        <View style={styles.container}>
-            <FlatList
-                data={recipes}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <View style={styles.recipeContainer}>
-                        <Text style={styles.title}>{item.title}</Text>
-                        <Text style={styles.date}>{item.createdAt?.seconds ? new Date(item.createdAt.seconds * 1000).toLocaleDateString() : 'No date'}</Text>
-                        <Text style={styles.category}>{item.categories ? item.categories.join(', ') : 'No categories'}</Text>
-                        <Text style={styles.description}>{item.description.substring(0, 100)}...</Text>
-                        <View style={styles.actions}>
-                            <TouchableOpacity onPress={() => navigation.navigate('EditRecipeScreen', { recipeId: item.id })}>
-                                <Ionicons name="create" size={24} color="blue" />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                                <Ionicons name="trash" size={24} color="red" />
-                            </TouchableOpacity>
-                        </View>
+        <ScrollView style={styles.container}>
+            {recipes.map((recipe) => (
+                <View key={recipe.id} style={styles.recipeCard}>
+                    <Text style={styles.title}>{recipe.title}</Text>
+                    <Text>Added on: {recipe.createdAt?.toDate().toLocaleDateString()}</Text>
+                    <Text>Category: {recipe.categories?.join(', ')}</Text>
+                    <Text numberOfLines={2}>Description: {recipe.description}</Text>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AddReciept', { recipeId: recipe.id })}>
+                            <Ionicons name="create" size={24} color="blue" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleDeleteRecipe(recipe.id)}>
+                            <Ionicons name="trash" size={24} color="red" />
+                        </TouchableOpacity>
                     </View>
-                )}
-            />
-        </View>
+                </View>
+            ))}
+        </ScrollView>
     );
 }
 
@@ -58,29 +64,26 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20
     },
-    recipeContainer: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: 'lightgray'
+    recipeCard: {
+        backgroundColor: '#fff',
+        padding: 15,
+        marginVertical: 10,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 8,
+        elevation: 5,
     },
     title: {
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
-    date: {
-        color: 'gray'
-    },
-    category: {
-        fontStyle: 'italic'
-    },
-    description: {
-        marginVertical: 10
-    },
-    actions: {
+    buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: 60
-    }
+        marginTop: 10,
+    },
 });
 
 export default MyRecipesScreen;
