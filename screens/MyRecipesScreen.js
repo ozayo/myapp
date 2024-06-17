@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView, Alert, TouchableOpacity, Image } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,9 +9,20 @@ function MyRecipesScreen({ navigation }) {
     const db = getFirestore();
     const user = auth.currentUser;
     const [recipes, setRecipes] = useState([]);
+    const [categories, setCategories] = useState({});
 
     useEffect(() => {
         if (user) {
+            const fetchCategories = async () => {
+                const categoriesCollection = collection(db, 'categories');
+                const categoriesSnapshot = await getDocs(categoriesCollection);
+                const categoriesMap = {};
+                categoriesSnapshot.forEach((doc) => {
+                    categoriesMap[doc.id] = doc.data().name;
+                });
+                setCategories(categoriesMap);
+            };
+
             const fetchRecipes = async () => {
                 const q = query(collection(db, 'recipes'), where('createdBy', '==', user.uid));
                 const querySnapshot = await getDocs(q);
@@ -22,6 +33,7 @@ function MyRecipesScreen({ navigation }) {
                 setRecipes(userRecipes);
             };
 
+            fetchCategories();
             fetchRecipes();
         }
     }, [user]);
@@ -43,8 +55,11 @@ function MyRecipesScreen({ navigation }) {
                 <View key={recipe.id} style={styles.recipeCard}>
                     <Text style={styles.title}>{recipe.title}</Text>
                     <Text>Added on: {recipe.createdAt?.toDate().toLocaleDateString()}</Text>
-                    <Text>Category: {recipe.categories?.join(', ')}</Text>
+                    <Text>Category: {recipe.categories?.map(catId => categories[catId]).join(', ')}</Text>
                     <Text numberOfLines={2}>Description: {recipe.description}</Text>
+                    {recipe.image ? (
+                        <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
+                    ) : null}
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity onPress={() => navigation.navigate('AddReciept', { recipeId: recipe.id })}>
                             <Ionicons name="create" size={24} color="blue" />
@@ -83,6 +98,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 10,
+    },
+    recipeImage: {
+        width: '100%',
+        height: 200,
+        marginVertical: 10,
+        borderRadius: 10,
     },
 });
 
