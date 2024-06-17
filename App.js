@@ -10,6 +10,7 @@ import EditMyInfoScreen from './screens/EditMyInfo';
 import AddNewReciept from './screens/AddRecipeScreen';
 import TestStorage from './screens/TestStorage';
 import UploadImageScreen from './screens/UploadImageScreen';
+import MyRecipesScreen from './screens/MyRecipesScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ function App() {
         <Stack.Screen name="AddReciept" component={AddNewReciept} />
         <Stack.Screen name="TestStorage" component={TestStorage} />
         <Stack.Screen name="UploadImageScreen" component={UploadImageScreen} />
+        <Stack.Screen name="MyRecipesScreen" component={MyRecipesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
