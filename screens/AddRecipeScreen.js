@@ -1,19 +1,30 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, ScrollView, Text, StyleSheet, Alert } from 'react-native';
-import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, storage } from '../firebase-config';
-import * as ImagePicker from 'expo-image-picker';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Button, FlatList, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { getFirestore, doc, setDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore';
+import { auth } from '../firebase-config';
+import { Ionicons } from '@expo/vector-icons';
+import MultiSelect from 'react-native-multiple-select';
 
-function AddRecipeScreen() {
+function AddRecipeScreen({ navigation }) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [cookTime, setCookTime] = useState('');
     const [servings, setServings] = useState('');
     const [ingredients, setIngredients] = useState(['']);
     const [steps, setSteps] = useState(['']);
-    const [image, setImage] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([]);
     const db = getFirestore();
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const categoriesCol = collection(db, 'categories');
+            const categorySnapshot = await getDocs(categoriesCol);
+            const categoryList = categorySnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
+            setCategories(categoryList);
+        };
+        fetchCategories();
+    }, []);
 
     const handleAddIngredient = () => {
         setIngredients([...ingredients, '']);
@@ -49,49 +60,10 @@ function AddRecipeScreen() {
         setSteps(newSteps);
     };
 
-    const handleImagePick = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            quality: 1,
-        });
-
-        if (!result.cancelled) {
-            setImage(result.uri);
-        }
-    };
-
-    const uploadImage = async (uri) => {
-        if (!uri) return null;
-
-        const blob = await new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.onload = () => resolve(xhr.response);
-            xhr.onerror = (e) => {
-                console.error(e);
-                reject(new TypeError('Network request failed'));
-            };
-            xhr.responseType = 'blob';
-            xhr.open('GET', uri, true);
-            xhr.send(null);
-        });
-
-        const fileRef = ref(storage, `recipes/${auth.currentUser.uid}/${Date.now()}`);
-        await uploadBytes(fileRef, blob);
-        blob.close();
-
-        return await getDownloadURL(fileRef);
-    };
-
     const handleAddRecipe = async () => {
         if (!auth.currentUser) {
             Alert.alert("Unauthorized", "Please log in to add recipes.");
             return;
-        }
-
-        let imageUrl = '';
-        if (image) {
-            imageUrl = await uploadImage(image);
         }
 
         const recipeRef = doc(db, 'recipes', `recipe_${Date.now()}`);
@@ -103,57 +75,87 @@ function AddRecipeScreen() {
                 servings,
                 ingredients,
                 steps,
-                image: imageUrl, // Image URL
+                categories: selectedCategories,
+                image: "", // Başlangıçta boş bir image URL
                 createdBy: auth.currentUser.uid,
                 createdAt: serverTimestamp()
             });
             Alert.alert('Success', 'Recipe added successfully!');
-            setImage(null); // Reset image state after upload
+            navigation.navigate('TestStorage', { recipeId: recipeRef.id });
         } catch (error) {
             Alert.alert('Error', 'Failed to add recipe: ' + error.message);
         }
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <TextInput value={title} onChangeText={setTitle} placeholder="Title" style={styles.input} />
-            <TextInput value={description} onChangeText={setDescription} placeholder="Description" multiline style={styles.input} />
-            <TextInput value={cookTime} onChangeText={setCookTime} placeholder="Cook Time" style={styles.input} />
-            <TextInput value={servings} onChangeText={setServings} placeholder="Servings" style={styles.input} />
-
-            <Button title="Pick Image from Gallery" onPress={handleImagePick} />
-            {image && <Text>Image Ready for Upload</Text>}
-
-            <Text>Ingredients:</Text>
-            {ingredients.map((ingredient, index) => (
+        <FlatList
+            style={styles.container}
+            ListHeaderComponent={
+                <>
+                    <TextInput value={title} onChangeText={setTitle} placeholder="Title" style={styles.input} />
+                    <TextInput value={description} onChangeText={setDescription} placeholder="Description" multiline style={styles.input} />
+                    <TextInput value={cookTime} onChangeText={setCookTime} placeholder="Cook Time" style={styles.input} />
+                    <TextInput value={servings} onChangeText={setServings} placeholder="Servings" style={styles.input} />
+                    <View style={{ marginBottom: 20 }}>
+                        <MultiSelect
+                            items={categories}
+                            uniqueKey="id"
+                            onSelectedItemsChange={setSelectedCategories}
+                            selectedItems={selectedCategories}
+                            selectText="Pick Categories"
+                            searchInputPlaceholderText="Search Categories..."
+                            onChangeInput={(text) => console.log(text)}
+                            tagRemoveIconColor="#CCC"
+                            tagBorderColor="#CCC"
+                            tagTextColor="#CCC"
+                            selectedItemTextColor="#CCC"
+                            selectedItemIconColor="#CCC"
+                            itemTextColor="#000"
+                            displayKey="name"
+                            searchInputStyle={{ color: '#CCC' }}
+                            submitButtonColor="#48d22b"
+                            submitButtonText="Submit"
+                        />
+                    </View>
+                    <Text>Ingredients:</Text>
+                </>
+            }
+            data={ingredients}
+            renderItem={({ item, index }) => (
                 <View key={index} style={styles.inputGroup}>
                     <TextInput
-                        value={ingredient}
+                        value={item}
                         onChangeText={text => handleIngredientChange(text, index)}
                         placeholder={`Ingredient ${index + 1}`}
                         style={styles.input}
                     />
-                    <Button title="Remove" onPress={() => handleRemoveIngredient(index)} />
+                    <TouchableOpacity onPress={() => handleRemoveIngredient(index)}>
+                        <Ionicons name="trash" size={24} color="red" />
+                    </TouchableOpacity>
                 </View>
-            ))}
-            <Button title="Add Ingredient" onPress={handleAddIngredient} />
-
-            <Text>Steps:</Text>
-            {steps.map((step, index) => (
-                <View key={index} style={styles.inputGroup}>
-                    <TextInput
-                        value={step}
-                        onChangeText={text => handleStepChange(text, index)}
-                        placeholder={`Step ${index + 1}`}
-                        style={styles.input}
-                    />
-                    <Button title="Remove" onPress={() => handleRemoveStep(index)} />
-                </View>
-            ))}
-            <Button title="Add Step" onPress={handleAddStep} />
-
-            <Button title="Add Recipe" onPress={handleAddRecipe} />
-        </ScrollView>
+            )}
+            ListFooterComponent={
+                <>
+                    <Button title="Add Ingredient" onPress={handleAddIngredient} />
+                    <Text>Steps:</Text>
+                    {steps.map((step, index) => (
+                        <View key={index} style={styles.inputGroup}>
+                            <TextInput
+                                value={step}
+                                onChangeText={text => handleStepChange(text, index)}
+                                placeholder={`Step ${index + 1}`}
+                                style={styles.input}
+                            />
+                            <TouchableOpacity onPress={() => handleRemoveStep(index)}>
+                                <Ionicons name="trash" size={24} color="red" />
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                    <Button title="Add Step" onPress={handleAddStep} />
+                    <Button title="Save and add image" onPress={handleAddRecipe} />
+                </>
+            }
+        />
     );
 }
 
@@ -168,7 +170,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     input: {
-        width: '100%',
+        flex: 1,
         padding: 10,
         marginBottom: 10,
         borderWidth: 1,
