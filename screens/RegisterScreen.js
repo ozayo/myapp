@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, Alert, TouchableOpacity, StyleSheet, Pressable, SafeAreaView, ScrollView } from 'react-native';
 import { registerWithEmailPassword } from '../firebase-config';  // Bu fonksiyon Firebase işlemlerini yapacak
+import { Link } from '@react-navigation/native';
 
 function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -22,7 +23,11 @@ function RegisterScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Register</Text>
+      <ScrollView>
+        <View style={{marginBottom:20,}}>
+          <Text style={{fontSize:24, fontWeight:"bold", color:"#000"}}>Create an account</Text>
+          <Text style={{ color: "#121212" }}>Let’s help you set up your account, it won’t take long.</Text> 
+        </View>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -62,16 +67,17 @@ function RegisterScreen({ navigation }) {
         placeholder="Location"
         onChangeText={setLocation}
         value={location}
-      />
-      <Button
-        title="Register"
-        onPress={handleRegister}
-      />
-      <Button
-        title="Back to Login"
-        onPress={() => navigation.goBack()}
-        color="#841584"
-      />
+        />
+        <View style={{display:"flex", alignSelf:"center", gap:10, marginTop:20,}}>
+          <Pressable style={styles.greenButton} onPress={handleRegister} >
+              <Text style={{color:"#fff",}}>REGISTER</Text>
+          </Pressable>    
+          <View style={{display:'flex', alignItems:'center'}}>
+            <Text style={{color:"#121212", fontSize:12, }}>Already a member?</Text>
+            <Link style={{ color: "#FF9C00", fontSize: 13 }} to={{ screen: 'Login' }}>Login</Link>
+          </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -80,16 +86,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
+    gap: 15,
+    backgroundColor: '#fff',
   },
   input: {
     width: '100%',
-    height: 40,
-    borderColor: 'gray',
+    height: 55,
+    borderColor: '#D9D9D9',
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    borderRadius: 10,
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -98,6 +106,15 @@ const styles = StyleSheet.create({
   visibilityBtn: {
     position: 'absolute',
     right: 10,
+  },
+  greenButton: {
+    backgroundColor: "#129575",
+    color: "#fff",
+    borderRadius: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    width: 230,
+    alignItems:"center",
   }
 });
 

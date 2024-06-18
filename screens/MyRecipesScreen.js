@@ -52,23 +52,25 @@ function MyRecipesScreen({ navigation }) {
     return (
         <ScrollView style={styles.container}>
             {recipes.map((recipe) => (
-                <View key={recipe.id} style={styles.recipeCard}>
-                    <Text style={styles.title}>{recipe.title}</Text>
-                    <Text>Added on: {recipe.createdAt?.toDate().toLocaleDateString()}</Text>
-                    <Text>Category: {recipe.categories?.map(catId => categories[catId]).join(', ')}</Text>
-                    <Text numberOfLines={2}>Description: {recipe.description}</Text>
-                    {recipe.image ? (
-                        <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
-                    ) : null}
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('AddReciept', { recipeId: recipe.id })}>
-                            <Ionicons name="create" size={24} color="blue" />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => handleDeleteRecipe(recipe.id)}>
-                            <Ionicons name="trash" size={24} color="red" />
-                        </TouchableOpacity>
+                <TouchableOpacity key={recipe.id} onPress={() => navigation.navigate('SingleRecipeScreen', { recipeId: recipe.id })}>
+                    <View style={styles.recipeCard}>
+                        <Text style={styles.title}>{recipe.title}</Text>
+                        <Text>Added on: {recipe.createdAt?.toDate().toLocaleDateString()}</Text>
+                        <Text>Category: {recipe.categories?.map(catId => categories[catId]).join(', ')}</Text>
+                        <Text numberOfLines={2}>Description: {recipe.description}</Text>
+                        {recipe.image ? (
+                            <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
+                        ) : null}
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity onPress={() => navigation.navigate('AddReciept', { recipeId: recipe.id })}>
+                                <Ionicons name="create" size={24} color="blue" />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => handleDeleteRecipe(recipe.id)}>
+                                <Ionicons name="trash" size={24} color="red" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
+                </TouchableOpacity>
             ))}
         </ScrollView>
     );

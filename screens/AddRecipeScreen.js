@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert, TouchableOpacity, FlatList } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, Alert, TouchableOpacity, FlatList, Pressable } from 'react-native';
 import { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp, collection, getDocs } from 'firebase/firestore';
 import { auth } from '../firebase-config';
 import { Ionicons } from '@expo/vector-icons';
@@ -178,7 +178,12 @@ function AddRecipeScreen({ navigation, route }) {
                     ))}
                     <Button title="Add Step" onPress={handleAddStep} />
 
-                    <Button title={recipeId ? "Save Changes and add image" : "Save and add image"} onPress={handleAddRecipe} />
+                    <View style={{marginBottom:50, paddingTop:10, display:'flex', alignItems:'center'}} >
+                        {/* <Button title={recipeId ? "Save Changes and add image" : "Save and add image"} onPress={handleAddRecipe} /> */}
+                         <Pressable style={styles.greenButton} onPress={handleAddRecipe} >
+                            <Text style={{color:"#fff",}}>{recipeId ? "Save Changes and add image" : "Save and add image"}</Text>
+                        </Pressable> 
+                    </View>
                 </View>
             )}
             keyExtractor={item => item.key}
@@ -189,7 +194,8 @@ function AddRecipeScreen({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20
+        padding: 20,
+        backgroundColor: '#fff',
     },
     inputGroup: {
         flexDirection: 'row',
@@ -197,13 +203,23 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     input: {
-        flex: 1,
-        padding: 10,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 5,
-    }
+        width: '100%',
+    height: 55,
+    borderColor: '#D9D9D9',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    },
+    greenButton: {
+    backgroundColor: "#129575",
+    color: "#fff",
+    borderRadius: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    width: 230,
+    alignItems:"center",
+  }
 });
 
 export default AddRecipeScreen;

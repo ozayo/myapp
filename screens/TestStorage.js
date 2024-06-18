@@ -18,12 +18,12 @@ export default function Upload({ route, navigation }) {
     const clearInputs = () => {
         setImage(null);
         setImagePreview(null);
-        console.log("Önizleme temizlendi");
+        console.log("Preview cleared");
     };
 
     const submitData = async () => {
         if (!image) {
-            Alert.alert("Lütfen bir resim seçin.");
+            Alert.alert("Please select an image.");
             return;
         }
 
@@ -47,13 +47,13 @@ export default function Upload({ route, navigation }) {
 
             setLoading(false);
             console.log('Resim başarıyla Firebase Storage\'a yüklendi ve Firestore güncellendi!');
-            Alert.alert("Resim başarıyla yüklendi ve tarif güncellendi!");
+            Alert.alert("Image uploaded successfully and recipe updated!");
             clearInputs();
             navigation.goBack(); // Yükleme işlemi bittikten sonra geri dön
         } catch (error) {
             setLoading(false);
             console.error('Resim yükleme hatası:', error);
-            Alert.alert("Resim yüklenemedi. Lütfen tekrar deneyin.");
+            Alert.alert("Image could not be loaded. Please try again.");
         }
     };
 
@@ -91,20 +91,20 @@ export default function Upload({ route, navigation }) {
                 <TouchableOpacity style={styles.imageContainer} onPress={handleChange}>
                     <View style={styles.imagePlaceholder}>
                         <Ionicons name="image" size={50} color="gray" />
-                        <Text>Bir resim seçin</Text>
+                        <Text>Select a picture</Text>
                     </View>
                 </TouchableOpacity>
             )}
 
             <TouchableOpacity style={styles.clearButton} onPress={clearInputs}>
-                <Text style={styles.clearButtonText}>Temizle</Text>
+                <Text style={styles.clearButtonText}>Clear</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.sendButton} onPress={submitData}>
-                <Text style={styles.sendTextButton}>Yükle</Text>
+                <Text style={styles.sendTextButton}>Upload</Text>
             </TouchableOpacity>
 
-            <Spinner visible={loading} textContent={'Yukleniyor...'} textStyle={styles.loadingText} />
+            <Spinner visible={loading} textContent={'Uploading...'} textStyle={styles.loadingText} />
         </Animatable.View>
     );
 }

@@ -51,9 +51,9 @@ function MyAccountScreen({ navigation }) {
             <Button title="Edit Profile" onPress={() => navigation.navigate('EditAccount')} />
             <Button title="Logout" onPress={handleLogout} />
             <Button title="Add New Recipe" onPress={() => navigation.navigate('AddReciept')} />
-            <Button title="Home" onPress={() => navigation.navigate('Home')} />
-            <Button title="Test Image Upload" onPress={() => navigation.navigate('TestStorage')} />
             <Button title="My Recipes" onPress={() => navigation.navigate('MyRecipesScreen')} />
+            <Button title="Home" onPress={() => navigation.navigate('Home')} />
+            
         </View>
     );
 }

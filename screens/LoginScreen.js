@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import { loginWithEmailPassword } from '../firebase-config';
+import { Link } from '@react-navigation/native';
 
 function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -21,6 +22,8 @@ function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <Text style={{fontSize:24, fontWeight:"bold", color:"#000"}}>Hello,</Text>
+      <Text style={{color:"#121212"}}>Welcome back!</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -44,8 +47,13 @@ function LoginScreen({ navigation }) {
         </TouchableOpacity>
       </View>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      <Button title="Login" onPress={handleLogin} />
-      <Button title="Register" onPress={() => navigation.navigate('Register')} />
+      <Pressable style={styles.greenButton} onPress={handleLogin} >
+          <Text style={{color:"#fff",}}>LOGIN</Text>
+      </Pressable>    
+          <View style={{display:'flex', alignItems:'center'}}>
+            <Text style={{color:"#121212", fontSize:12, }}>Don’t have an account?</Text>
+            <Link style={{ color: "#FF9C00", fontSize: 13 }} to={{ screen: 'Register' }}>Register here</Link>
+          </View>
     </View>
   );
 }
@@ -56,14 +64,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    gap: 15,
+    backgroundColor: '#fff',
   },
   input: {
     width: '100%',
-    height: 40,
-    borderColor: 'gray',
+    height: 55,
+    borderColor: '#D9D9D9',
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    borderRadius: 10,
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -76,6 +87,15 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',  // Hata mesajı rengi
     marginBottom: 10,  // Hata mesajından sonra boşluk
+  },
+  greenButton: {
+    backgroundColor: "#129575",
+    color: "#fff",
+    borderRadius: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    width: 230,
+    alignItems:"center",
   }
 });
 
