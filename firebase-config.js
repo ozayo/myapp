@@ -22,7 +22,7 @@ import { Platform } from 'react-native'; // Platformu kontrol etmek için ekleyi
 // };
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBkTjDm1BNg32Mrm3g721c9-Gz8sj6KHOY",
+  apiKey: "AIzaSyBkTjDm1BNg32Mrm3g721c9-Gz8sj6KHOY",
   authDomain: "myapp-609f2.firebaseapp.com",
   projectId: "myapp-609f2",
   storageBucket: "myapp-609f2.appspot.com",

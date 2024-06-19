@@ -16,7 +16,7 @@ function LoginScreen({ navigation }) {
       navigation.navigate('Home');
     } catch (error) {
       // Hata mesajını ayarla
-      setError(error.message);  // Hata mesajını kullanıcıya göster
+      // setError(error.message);  // Hata mesajını kullanıcıya göster
     }
   };
 
