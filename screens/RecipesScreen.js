@@ -80,7 +80,7 @@ function RecipesScreen({ navigation }) {
         <View style={styles.container}>
             {user && (
                 <View style={styles.header}>
-                    <Image source={{ uri: profile.profileImageUrl || 'https://via.placeholder.com/40' }} style={styles.profileImage} />
+                    <Image source={{ uri: profile.profileImageUrl || 'https://placehold.co/70x70/png?text=IMG' }} style={styles.profileImage} />
                     <Text style={styles.username}>{profile.username}</Text>
                     <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <Ionicons name="menu" size={24} color="black" />

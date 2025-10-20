@@ -63,7 +63,7 @@ function EditMyInfo({ navigation }) {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaType.Images,
+            mediaTypes: 'Images', // 'Images', 'Videos', veya ['Images', 'Videos']
             allowsEditing: true,
             quality: 0.8,
         });

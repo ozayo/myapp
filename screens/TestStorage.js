@@ -68,7 +68,7 @@ export default function Upload({ route, navigation }) {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaType.Images,
+            mediaTypes: 'Images',
             allowsEditing: true,
             quality: 0.8,
         });
