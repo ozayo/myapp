@@ -39,7 +39,7 @@ function MyAccountScreen({ navigation }) {
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <Image
-                    source={{ uri: profile.profileImageUrl || 'https://via.placeholder.com/70x70.png?text=No+Image' }}
+                    source={{ uri: profile.profileImageUrl || 'https://placehold.co/70x70/png?text=IMG' }}
                     style={styles.profileImage}
                 />
             </View>

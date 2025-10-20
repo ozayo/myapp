@@ -22,12 +22,12 @@ import { Platform } from 'react-native'; // Platformu kontrol etmek için ekleyi
 // };
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBkTjDm1BNg32Mrm3g721c9-Gz8sj6KHOY",
-  authDomain: "myapp-609f2.firebaseapp.com",
-  projectId: "myapp-609f2",
-  storageBucket: "myapp-609f2.appspot.com",
-  messagingSenderId: "542319139206",
-  appId: "1:542319139206:web:4eeeb4028a25d8ccaa3407"
+  apiKey: process.env.EXPO_PUBLIC_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
